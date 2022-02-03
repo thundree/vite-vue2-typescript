@@ -1,13 +1,32 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import { setupLayouts } from 'virtual:generated-layouts'
-import generatedRoutes from 'virtual:generated-pages'
+import VueRouter, { RouteConfig } from 'vue-router'
+import Default from '../layouts/Default.vue'
+
 Vue.use(VueRouter)
 
-const routes = setupLayouts(generatedRoutes)
+const routes: Array<RouteConfig> = [
+  {
+    path: '',
+    component: Default,
+    meta: { requiresAuth: false },
+    children: [
+      {
+        path: '/',
+        name: 'home',
+        component: () => import(/* webpackChunkName: "home" */ '../pages/Home.vue'),
+      },
+      {
+        path: '/about',
+        name: 'about',
+        component: () => import(/* webpackChunkName: "about" */ '../pages/About.vue'),
+      },
+    ],
+  },
+]
 
 const router = new VueRouter({
   mode: 'history',
+  base: process.env.BASE_URL || '/',
   routes,
 })
 

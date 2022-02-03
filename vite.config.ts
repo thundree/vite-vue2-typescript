@@ -9,7 +9,8 @@ import OptimizationPersist from 'vite-plugin-optimize-persist'
 import PkgConfig from 'vite-plugin-package-config'
 import Components from 'unplugin-vue-components/vite'
 import { ElementUiResolver } from 'unplugin-vue-components/resolvers'
-import WindiCSS from 'vite-plugin-windicss'
+
+import viteComponents, { VuetifyResolver } from 'vite-plugin-components'
 
 const rollupOptions = {}
 
@@ -43,9 +44,7 @@ export default defineConfig({
   },
   define: define,
   server: {
-    // 代理
     proxy,
-
     port: 3003,
     fs: {
       strict: false,
@@ -53,14 +52,17 @@ export default defineConfig({
   },
   build: {
     target: 'es2015',
-    minify: 'terser', // 是否进行压缩,boolean | 'terser' | 'esbuild',默认使用terser
-    manifest: false, // 是否产出maifest.json
-    sourcemap: false, // 是否产出soucemap.json
-    outDir: 'build', // 产出目录
+    minify: 'terser',
+    manifest: false,
+    sourcemap: false,
+    outDir: 'build',
     rollupOptions,
   },
   esbuild,
   plugins: [
+    viteComponents({
+      customComponentResolvers: [VuetifyResolver()],
+    }),
     createVuePlugin({
       jsx: true,
       vueTemplateOptions: {
@@ -90,9 +92,16 @@ export default defineConfig({
       replaceSquareBrackets: true,
       nuxtStyle: true,
     }),
-    WindiCSS(),
   ],
   css: {
-    preprocessorOptions: {},
+    preprocessorOptions: {
+      // sass: {
+      //   additionalData: [
+      //     // vuetify variable overrides
+      //     '@import "@/assets/styles/variables"',
+      //     '',
+      //   ].join('\n'),
+      // },
+    },
   },
 })
